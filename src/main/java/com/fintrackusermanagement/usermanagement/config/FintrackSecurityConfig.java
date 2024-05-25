@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import javax.sql.DataSource;
 
+@Configuration
 @EnableWebSecurity
 public class FintrackSecurityConfig {
 
@@ -36,6 +37,7 @@ public class FintrackSecurityConfig {
     }
 
     // not recommended for production
+    // necessary to tell Springboot how pur passwords are store right now..we're using plain text :)
     @Bean
     public PasswordEncoder passwordEncoder(){
         return NoOpPasswordEncoder.getInstance();

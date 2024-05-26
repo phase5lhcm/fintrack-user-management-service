@@ -20,7 +20,7 @@ public class FintrackSecurityConfig {
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
+        httpSecurity.csrf().disable() // disabling csrf for now. Disabling allows me to test the apis
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/api/user/profile", "/api/user/change-password", "/api/user/logout", "/api/admin/**").authenticated()
                         .requestMatchers("/api/register", "/api/login", "/api/password-reset-request", "/api/password-reset").permitAll()
@@ -31,10 +31,14 @@ public class FintrackSecurityConfig {
         return httpSecurity.build();
     }
 
-    @Bean
+  /* No longer need to use JdbcUserDetailsManager because I am using custom logic instead to
+     authenticate a user based on user input (
+     findUserByUsername implementation in UserManagementService class)
+
+  @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource){
         return new JdbcUserDetailsManager(dataSource);
-    }
+    } */
 
     // not recommended for production
     // necessary to tell Springboot how pur passwords are store right now..we're using plain text :)

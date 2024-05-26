@@ -1,11 +1,14 @@
 package com.fintrackusermanagement.usermanagement.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name="\"user\"")
 public class User {
 
     public Long getUserId() {
@@ -69,12 +72,16 @@ public class User {
     private Long userId;
 
     @Column(unique = true, nullable = false)
+    @NotEmpty(message = "Username is required")
     private String username;
 
     @Column(unique = true, nullable = false)
+    @NotEmpty(message = "Email is required")
+    @Email(message = "Please use a valid email address")
     private String email;
 
     @Column(nullable = false)
+    @NotEmpty(message = "Password is required")
     private String password;
 
     private String firstName;

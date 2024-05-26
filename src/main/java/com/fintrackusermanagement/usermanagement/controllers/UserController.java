@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,9 +20,9 @@ public class UserController {
     UserRegisterService userRegisterService;
 
     @PostMapping("/api/register")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody User user){
+    public ResponseEntity<String> registerUser(@Valid @RequestBody User user, @RequestParam(defaultValue = "false") boolean isAdmin){
         try{
-           User savedUser = userRegisterService.registerUser(user);
+           User savedUser = userRegisterService.registerUser(user, isAdmin);
            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully" + savedUser.getUsername());
         } catch (Exception error){
           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(

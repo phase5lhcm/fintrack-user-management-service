@@ -35,4 +35,5 @@ build/
 /src/main/resources/application.properties
 fintrack-db01.sql
 src/main/resources/scripts
+logs/
 

@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,10 +22,15 @@ public class UserController {
     @Autowired
     UserRegisterService userRegisterService;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @PostMapping("/api/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody User user, @RequestParam(defaultValue = "false") boolean isAdmin) {
         logger.info("User management register API called");
         try {
+           String hashedPwd =  passwordEncoder.encode(user.getPassword());
+           user.setPassword(hashedPwd);
             User savedUser = userRegisterService.registerUser(user, isAdmin);
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully: " + savedUser.getUsername());
         } catch (Exception error) {

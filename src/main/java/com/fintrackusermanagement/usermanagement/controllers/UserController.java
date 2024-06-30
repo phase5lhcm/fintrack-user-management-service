@@ -6,6 +6,10 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +29,9 @@ public class UserController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     @PostMapping("/api/register")
     public ResponseEntity<String> registerUser(@Valid @RequestBody User user, @RequestParam(defaultValue = "false") boolean isAdmin) {
         logger.info("User management register API called");
@@ -38,6 +45,27 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     "Error registering user: " + error.getMessage()
             );
+        }
+    }
+
+    @PostMapping("/api/login")
+    public ResponseEntity<String> loginUser(@RequestBody User user) {
+        logger.info("User management login API called");
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+            );
+
+            if (authentication.isAuthenticated()) {
+                logger.info("User logged in successfully: " + user.getUsername());
+                return ResponseEntity.ok("User logged in successfully: " + user.getUsername());
+            } else {
+                logger.warn("Authentication failed for user: " + user.getUsername());
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
+            }
+        } catch (AuthenticationException e) {
+            logger.error("Error logging in user: ", e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error logging in user: " + e.getMessage());
         }
     }
 }

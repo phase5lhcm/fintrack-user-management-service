@@ -49,6 +49,25 @@ pipeline {
                 }
             }
         }
+            stage('Upload Artifact') {
+                     steps {
+                         nexusArtifactUploader(
+                             nexusVersion: 'nexus3',
+                             protocol: 'http',
+                             nexusUrl: 'localhost:8082',
+                             groupId: 'QA',
+                             version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+                             repository: 'fintrack-nexus-repo',
+                             credentialsId: 'nexus-login',
+                             artifacts: [
+                                 [artifactId: fintrack-user-management-service,
+                                 classifier: '',
+                                 file: "target/user-management-v2.war",
+                                 type: 'war']
+                             ]
+                         )
+                     }
+                 }
 
         stage('Deploy') {
             steps {
